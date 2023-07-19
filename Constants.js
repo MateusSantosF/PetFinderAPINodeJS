@@ -1,4 +1,5 @@
 
 module.exports = {
-    BLANK_SPACE: " "
+    BLANK_SPACE: " ",
+    IMAGE_LIMIT_FOR_PETS: 5
 }

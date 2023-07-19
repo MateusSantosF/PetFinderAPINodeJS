@@ -130,8 +130,8 @@ module.exports = class UserController {
                         .isEmail()
                         .custom(async (value, { req }) => {
                             const userExists = await User.findOne({ email: value })
-
-                            if (!userExists) {
+                         
+                            if (!userExists || userExists == null) {
                                 throw new Error('User not found')
                             }
                             req.user = userExists;
@@ -139,6 +139,10 @@ module.exports = class UserController {
                         }),
                     body('password', 'Invalid password.').exists().isLength({ min: 5 })
                         .custom(async (value, { req }) => {
+
+                            if(!req.user){
+                                return false
+                            }
                             const checkedPassword = await checkPassword(value, req.user.password)
 
                             if (!checkedPassword) {

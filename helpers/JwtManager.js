@@ -19,6 +19,7 @@ const createUserToken = async (user, req, res) => {
 }
 
 const getTokenFromHeader = (req) => {
+
     const authHeader = req.headers.authorization
     const token = authHeader.split(Constants.BLANK_SPACE)[1]
 
@@ -37,7 +38,6 @@ const verifyToken = (req, res, next) => {
     const token = getTokenFromHeader(req);
 
     if (!token) {
-
         return res.status(401).json({ message: "Não autorizado." })
     }
 
@@ -46,11 +46,8 @@ const verifyToken = (req, res, next) => {
         req.user = userVerified
         next()
     } catch (err) {
-
         return res.status(401).json({ message: "Token inválido" })
     }
-
-
 }
 
 module.exports = {
