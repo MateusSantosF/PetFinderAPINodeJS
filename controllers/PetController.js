@@ -1,5 +1,4 @@
 const GetUserByToken = require('../helpers/GetUserByToken');
-const { getTokenFromHeader } = require('../helpers/JwtManager');
 const ObjectId = require('mongoose').Types.ObjectId
 const Pet = require('../models/Pet')
 const { body, param, check, validationResult } = require('express-validator')
@@ -7,7 +6,7 @@ const { body, param, check, validationResult } = require('express-validator')
 module.exports = class PetController {
 
     static async getAll(req, res) {
-        const pets = await Pet.find().sort('-createdAt');
+        const pets = await Pet.find({ available: true }).sort('-createdAt');
         res.status(200).json({ pets })
     }
 
@@ -103,7 +102,7 @@ module.exports = class PetController {
 
 
         const pet = new Pet({
-            name, age, weigth, color,images,
+            name, age, weigth, color, images, available: true,
             user: {
                 _id: petOwner.id,
                 name: petOwner.name,
@@ -151,8 +150,45 @@ module.exports = class PetController {
             }
         }
 
-        await Pet.findByIdAndUpdate(pet._id,updatedPet)
-        res.status(200).json({message:"Pet updated with sucess"})
+        await Pet.findByIdAndUpdate(pet._id, updatedPet)
+        res.status(200).json({ message: "Pet updated with sucess" })
+    }
+
+    static async schedule(req, res) {
+
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            res.status(422).json({ errors: errors.array() });
+            return
+        }
+
+        const pet = req.pet;
+        const { _id, name, image, phone } = req.user
+        pet.adopter = {
+            _id,
+            name,
+            image,
+            phone
+        }
+
+        await Pet.findByIdAndUpdate(pet._id, pet)
+        res.status(200).json({ message: `The visit has been successfully scheduled. Contact ${name} by phone ${phone}` })
+    }
+
+    static async concludeAdoption(req, res) {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            res.status(422).json({ errors: errors.array() });
+            return
+        }
+        const pet = req.pet;
+
+        pet.available = false
+
+        await Pet.findByIdAndUpdate(pet._id, pet)
+        res.status(200).json({ message: `Pet adopted with sucess!` })
     }
 
     static validate(method) {
@@ -164,14 +200,14 @@ module.exports = class PetController {
                     body('weigth').exists().withMessage('Weight is required').isInt('Invalid age'),
                     body('color').exists().withMessage('Color is required').notEmpty(),
                     check('image').custom((_, { req }) => {
-                        if (!req.files) {
+                        if (!req.files || req.files.length == 0) {
                             return false
                         }
                         return true
                     }).withMessage('Images is required')
                 ]
             }
-            case 'byId':{
+            case 'byId': {
                 return [
                     param('id').custom(async (value, { req }) => {
                         if (!ObjectId.isValid(value)) {
@@ -182,8 +218,41 @@ module.exports = class PetController {
                         if (!pet) {
                             throw new Error(`Not found pet with id ${value}`)
                         }
-
                         req.pet = pet
+                        return true
+                    })
+                ]
+            }
+            case 'schedule': {
+                return [
+                    param('id').custom(async (value, { req }) => {
+                        if (!ObjectId.isValid(value)) {
+                            throw new Error('Invalid pet id')
+                        }
+                        const pet = await Pet.findById(value)
+
+                        if (!pet) {
+                            throw new Error(`Not found pet with id ${value}.`)
+                        }
+                        req.pet = pet
+
+                        const user = await GetUserByToken(req);
+
+                        if (!user) {
+                            throw new Error(`Not authorized.`)
+                        }
+
+                        if (pet.user._id.toString() == user._id.toString()) {
+                            throw new Error(`You cannot adopt your own pet.`)
+                        }
+
+                        if (pet.adopter) {
+                            if (pet.adopter._id.toString() == user._id.toString()) {
+                                throw new Error(`You cannot adopt the same pet again.`)
+                            }
+                        }
+
+                        req.user = user
                         return true
                     })
                 ]
@@ -200,14 +269,14 @@ module.exports = class PetController {
                         if (!pet) {
                             throw new Error(`Not found pet with id ${value}`)
                         }
-                        
+
                         const petOwner = await GetUserByToken(req);
 
                         if (!petOwner) {
                             throw new Error(`Not authorized.`)
                         }
-                
-                        if (pet.user._id.toString() != petOwner._id.toString()) {
+
+                        if (pet.user._id.toString() !== petOwner._id.toString()) {
                             throw new Error(`An error occurred while processing your request`)
                         }
                         req.petOwner = petOwner
@@ -219,7 +288,7 @@ module.exports = class PetController {
                     body('weigth').exists().withMessage('Weight is required').isInt('Invalid age'),
                     body('color').exists().withMessage('Color is required').notEmpty(),
                     check('image').custom((_, { req }) => {
-                        
+
                         if (!req.files || !Array.isArray(req.files) || !req.files.length) {
                             return false
                         }

@@ -1,5 +1,5 @@
 const { createUserToken, getTokenFromHeader, getDecodedToken } = require('../helpers/JwtManager')
-const { body, header, param, validationResult } = require('express-validator')
+const { body, header, check, param, validationResult } = require('express-validator')
 
 const User = require('../models/User')
 const bcrypt = require('bcrypt')
@@ -64,7 +64,7 @@ module.exports = class UserController {
 
     static async editUser(req, res) {
 
-        const errors = validationResult(req.body);
+        const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
             res.status(422).json({ errors: errors.array() });
@@ -76,8 +76,11 @@ module.exports = class UserController {
         }
         const { name, email, password, phone } = req.body;
 
-        const hashedPassword = await generateHashedPasswordAsync(password);
-        req.user.password = hashedPassword
+        if (req.updatePassword) {
+            const hashedPassword = await generateHashedPasswordAsync(password);
+            req.user.password = hashedPassword
+        }
+
         req.user.name = name
         req.user.email = email
         req.user.phone = phone
@@ -101,7 +104,7 @@ module.exports = class UserController {
                 return [
                     body('name',).exists().withMessage('name is required')
                         .isLength({ min: 3 }).withMessage('min length for name is 3'),
-                    body('email', 'Invalid email').exists().isEmail().custom(async (value) => {
+                    body('email').exists().withMessage('E-mail is required.').isEmail().withMessage('Invalid email.').custom(async (value) => {
 
                         const userExists = await User.findOne({ email: value })
                         if (userExists) {
@@ -130,7 +133,7 @@ module.exports = class UserController {
                         .isEmail()
                         .custom(async (value, { req }) => {
                             const userExists = await User.findOne({ email: value })
-                         
+
                             if (!userExists || userExists == null) {
                                 throw new Error('User not found')
                             }
@@ -140,7 +143,7 @@ module.exports = class UserController {
                     body('password', 'Invalid password.').exists().isLength({ min: 5 })
                         .custom(async (value, { req }) => {
 
-                            if(!req.user){
+                            if (!req.user) {
                                 return false
                             }
                             const checkedPassword = await checkPassword(value, req.user.password)
@@ -221,15 +224,29 @@ module.exports = class UserController {
                         .custom((value, { req }) => {
                             return true;
                         }),
-                    body('confirmPassword').isLength({ min: 6 }).withMessage('Min length is 6 chars')
-                        .exists().withMessage('confirmPassword is required'),
-                    body('password').isLength({ min: 6 }).withMessage('Min length for password is 6 chars')
-                        .custom(async (value, { req }) => {
+                    check('password').custom((value, { req }) => {
+                        const password = req.body.password;
+                        const confirmPassword = req.body.confirmPassword;
 
-                            if (value !== req.body.confirmPassword) {
-                                throw new Error('Password\'s dont match')
+                        if (password) {
+                          
+                            if (confirmPassword) {               
+                                if (password.length < 6 || confirmPassword.length < 6) {
+                                    throw new Error('Password\'s length invalid.')
+                                }
+                                if (password !== confirmPassword) {
+                                    throw new Error('Password\'s dont match')
+                                }
+                                req.updatePassword = true;
+                                return true;
                             }
-                        })
+                            else {
+                                throw new Error('ConfirmPassword is required.')
+                            }
+                        }
+                        req.updatePassword = false;
+                        return true;
+                    })
                 ]
             }
         }

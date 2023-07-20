@@ -1,0 +1,533 @@
+{
+	"info": {
+		"_postman_id": "c541e6bd-18ba-47bb-a838-7384f0e80053",
+		"name": "PetFinder",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26025874"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "/users/register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Leticia\",\r\n    \"password\": \"1234567\",\r\n    \"confirmPassword\": \"1234567\",\r\n    \"phone\": \"2321231221\",\r\n    \"email\": \"leticia.enf@gmail.com\"\r\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/users/register",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"andressa.arch@gmail.com\",\r\n    \"password\": \"1234567\"\r\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/users/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/checkuser",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/users/checkuser",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"checkuser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/users/64b7263289c2f661831231da",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"64b7263289c2f661831231da"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "editUser",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Andressa",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "1234567",
+									"type": "text"
+								},
+								{
+									"key": "confirmPassword",
+									"value": "1234567",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "11965920019",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "andressa.arch@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/mateu/Downloads/idea.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/users/edit/64b7da12b563d0435cbe0469",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"edit",
+								"64b7da12b563d0435cbe0469"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pet",
+			"item": [
+				{
+					"name": "/pets/register",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": [
+										"/C:/Users/mateu/Downloads/62969620.png",
+										"/C:/Users/mateu/Downloads/idea.png"
+									]
+								},
+								{
+									"key": "name",
+									"value": "Luluzin",
+									"type": "text"
+								},
+								{
+									"key": "age",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "color",
+									"value": "Cinza",
+									"type": "text"
+								},
+								{
+									"key": "weigth",
+									"value": "10",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/pets/register",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"pets",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/pets/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": "/C:/Users/mateu/Downloads/62969620.png"
+								},
+								{
+									"key": "name",
+									"value": "Maylon",
+									"type": "text"
+								},
+								{
+									"key": "age",
+									"value": "6",
+									"type": "text"
+								},
+								{
+									"key": "color",
+									"value": "Cinza",
+									"type": "text"
+								},
+								{
+									"key": "weigth",
+									"value": "11",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/pets/64b7f0f21a30989456723c98",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"pets",
+								"64b7f0f21a30989456723c98"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/pets/",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/pets/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"pets",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/pets/mypets",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/pets/mypets",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"pets",
+								"mypets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/pets/myadoptions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/pets/myadoptions",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"pets",
+								"myadoptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/pets/:id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/pets/64b7e3caf1d251740b6751e",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"pets",
+								"64b7e3caf1d251740b6751e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/pets/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/pets/64b7e7d628375428bfa7e043",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"pets",
+								"64b7e7d628375428bfa7e043"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/pets/schedule/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{URL}}/pets/schedule/64b7ecf924bd3e59cdd3f638",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"pets",
+								"schedule",
+								"64b7ecf924bd3e59cdd3f638"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/pets/conclude/:id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{URL}}/pets/conclude/64b7ecf924bd3e59cdd3f638",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"pets",
+								"conclude",
+								"64b7ecf924bd3e59cdd3f638"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "TOKEN",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQW5kcmVzc2EiLCJpZCI6IjY0YjdkYTEyYjU2M2QwNDM1Y2JlMDQ2OSIsImlhdCI6MTY4OTc4NzI2MCwiZXhwIjoxNjg5NzkwODYwfQ.05LdR-TWx4GuRsm2t-usG8A-VsR0-q7t1A-OY7111cU",
+			"type": "string"
+		}
+	]
+}

@@ -9,8 +9,8 @@ router.get('/:id', JwtManager.verifyToken, UserController.validate('getUserById'
 
 router.patch('/edit/:id',
     JwtManager.verifyToken,
-    UserController.validate('edit'),
     ImageUpload.single('image'),
+    UserController.validate('edit'),
     UserController.editUser
 )
 
