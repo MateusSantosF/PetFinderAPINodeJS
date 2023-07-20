@@ -61,7 +61,7 @@ module.exports = class PetController {
             return
         }
 
-        const pets = await Pet.find({ "adopter._id": petOwner.id }).sort('-createdAt');
+        const pets = await Pet.find({ "adopter._id": petOwner._id }).sort('-createdAt');
 
         res.status(200).json({ pets })
     }
