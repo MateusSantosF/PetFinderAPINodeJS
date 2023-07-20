@@ -49,7 +49,7 @@ module.exports = class PetController {
             return
         }
 
-        await Pet.findByIdAndRemove(petId);
+        await Pet.findByIdAndRemove(pet._id);
         res.status(200).json({ message: "Pet removed with sucess." })
     }
 
@@ -133,22 +133,31 @@ module.exports = class PetController {
 
         const pet = req.pet
         const { name, age, weigth, color } = req.body;
-        const images = req.files.map(file => {
-            return file.filename
-        });
+        const images = req.files
 
         const updatedPet = {
             name,
             age,
             weigth,
             color,
-            images,
+            images:[],
             user: {
                 _id: req.petOwner.id,
                 name: req.petOwner.name,
                 phone: req.petOwner.phone
             }
+        }   
+
+        if(images.length > 0 ){
+            images.map(image=>{
+                updatedPet.images.push(image.filename)
+            })
+        }else{
+            pet.images.map(image=>{
+                updatedPet.images.push(image)
+            })
         }
+       
 
         await Pet.findByIdAndUpdate(pet._id, updatedPet)
         res.status(200).json({ message: "Pet updated with sucess" })
@@ -199,7 +208,9 @@ module.exports = class PetController {
                     body('age').exists().withMessage('Age is required.').isInt().withMessage('Invalid age.'),
                     body('weigth').exists().withMessage('Weight is required').isInt('Invalid age'),
                     body('color').exists().withMessage('Color is required').notEmpty(),
-                    check('image').custom((_, { req }) => {
+                    check('images').custom((_, { req }) => {
+
+                    
                         if (!req.files || req.files.length == 0) {
                             return false
                         }
@@ -287,9 +298,9 @@ module.exports = class PetController {
                     body('age').exists().withMessage('Age is required.').isInt().withMessage('Invalid age.'),
                     body('weigth').exists().withMessage('Weight is required').isInt('Invalid age'),
                     body('color').exists().withMessage('Color is required').notEmpty(),
-                    check('image').custom((_, { req }) => {
-
-                        if (!req.files || !Array.isArray(req.files) || !req.files.length) {
+                    check('images').custom((_, { req }) => {
+          
+                        if (!req.files || !Array.isArray(req.files) ) {
                             return false
                         }
                         return true
