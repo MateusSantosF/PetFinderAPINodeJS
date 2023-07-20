@@ -1,2 +1,10 @@
 node_modules/
-public/images/
+# JPEG
+*.jpg
+*.jpeg
+*.jpe
+*.jif
+*.jfif
+*.jfi
+#PNG
+*.png
